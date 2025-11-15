@@ -1,0 +1,509 @@
+        :root {
+            --primary-color: #e63946;
+            --secondary-color: #5e35b1;
+            --dark-bg: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Header Styles */
+        .top-header {
+            background: var(--dark-bg);
+            padding: 20px 0;
+        }
+
+        .logo-section {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .main-banner {
+            background: var(--dark-bg);
+            color: white;
+            padding: 30px 0;
+        }
+
+        .banner-title {
+            border: 3px solid var(--secondary-color);
+            padding: 20px 40px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .banner-subtitle {
+            margin-top: 15px;
+            letter-spacing: 3px;
+            font-size: 0.9rem;
+        }
+
+        /* Navigation */
+        .main-nav {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+
+        .main-nav a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            transition: color 0.3s;
+        }
+
+        .main-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hero Section - Carousel */
+        .carousel {
+            position: relative;
+            height: 600px;
+        }
+
+        .carousel-inner {
+            height: 100%;
+        }
+
+        .carousel-item {
+            height: 600px;
+        }
+
+        .hero-slide {
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .hero-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5));
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .btn-conoce-mas {
+            background: #00a8e8;
+            color: white;
+            padding: 12px 40px;
+            border: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-conoce-mas:hover {
+            transform: translateX(5px);
+            background: #0077b6;
+            color: white;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+            opacity: 0.8;
+        }
+
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            opacity: 1;
+        }
+
+        .carousel-indicators button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 5px;
+        }
+
+        /* Search Filters */
+        .search-filters {
+            background: #f8f9fa;
+            padding: 30px;
+            margin: 40px 0 50px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .filter-select {
+            border: 2px solid #ddd;
+            padding: 12px;
+            border-radius: 5px;
+        }
+
+        .results-count {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            display: inline-block;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        /* Vehicle Cards */
+        .vehicle-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 30px;
+            background: white;
+        }
+
+        .vehicle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .vehicle-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            position: relative;
+        }
+
+        .badge-movimiento {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .vehicle-info {
+            padding: 20px;
+        }
+
+        .vehicle-brand {
+            color: var(--primary-color);
+            font-weight: bold;
+            border-left: 3px solid var(--primary-color);
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        .vehicle-price {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .vehicle-price-iva {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .vehicle-specs {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .spec-item {
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn-ver-mas {
+            background: var(--primary-color);
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-ver-mas:hover {
+            background: #d62828;
+        }
+
+        /* WhatsApp Button */
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+            text-decoration: none;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            color: #FFF;
+            text-decoration: none;
+        }
+
+        .whatsapp-float i {
+            line-height: 1;
+            text-decoration: none;
+        }
+
+        /* Sidebar Ads */
+        .sidebar-ad {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-ad img {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Footer Styles */
+        .main-footer {
+            background: var(--dark-bg);
+            color: white;
+            padding: 60px 0 0 0;
+            margin-top: 80px;
+        }
+
+        .footer-section {
+            margin-bottom: 30px;
+        }
+
+        .footer-title {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+            display: inline-block;
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .footer-contact-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .footer-contact-item i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-right: 15px;
+            min-width: 25px;
+            margin-top: 3px;
+        }
+
+        .footer-contact-info a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-contact-info a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .footer-social a {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .footer-social a:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            background: #000;
+            padding: 25px 0;
+            margin-top: 40px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer-bottom p {
+            margin: 0;
+            color: #999;
+        }
+
+        .footer-bottom a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .footer-bottom a:hover {
+            text-decoration: underline;
+        }
+
+        .logo_clic {
+                width: 100%;
+                height: auto;
+                display: inline-block; /* elimina espacios debajo de la imagen */
+                border-radius: 10%;        
+            }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .logo_clic {
+                width: 50%;
+                height: auto;
+                display: inline-block; /* elimina espacios debajo de la imagen */
+                border-radius: 10%;        
+            }
+
+            .div-logo {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+            }
+            
+            .banner-title {
+                font-size: 1.5rem;
+                padding: 15px 20px;
+            }
+
+            .hero-carousel,
+            .carousel,
+            .carousel-item,
+            .hero-slide {
+                height: 400px;
+            }
+
+            .lead {
+                font-size: 1rem;
+            }
+
+            .main-footer {
+                padding: 40px 0 0 0;
+                margin-top: 50px;
+            }
+
+            .footer-section {
+                margin-bottom: 40px;
+            }
+        }
+
+
+
+
+.pagination .page-link {
+    color: #ffffff;
+    background-color: #1a1a1a; /* negro elegante */
+    border: 1px solid #333;
+    padding: 8px 14px;
+    font-weight: 500;
+}
+
+.pagination .page-link:hover {
+    background-color: #ff0000; /* rojo */
+    border-color: #b30000;
+    color: #fff;
+}
+
+.pagination .active .page-link {
+    background-color: #ff0000 !important;
+    border-color: #b30000;
+    color: #fff;
+    font-weight: 600;
+}
+
+.pagination .disabled .page-link {
+    background-color: #333;
+    border-color: #222;
+    color: #777;
+    pointer-events: none;
+}
+
+.pagination .page-item {
+    margin: 0 3px;
+}
