@@ -729,7 +729,7 @@ $relacionados = [
     <nav class="main-nav">
         <div class="container">
             <div class="d-flex justify-content-center flex-wrap">
-                <a href="index.php">INICIO</a>
+                <a href="index_crud.php">INICIO</a>
                 <a href="#quienes-somos">QUIENES SOMOS</a>
                 <a href="#representaciones">REPRESENTACIONES</a>
                 <a href="#publicaciones">PUBLICACIONES</a>
@@ -768,7 +768,7 @@ $relacionados = [
                     </div>
                 </div>
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <a href="portal_automotriz.php" class="back-button">
+                    <a href="portal_automotriz.php#catalogo" class="back-button">
                         <i class="fas fa-arrow-left"></i> Volver al catálogo
                     </a>
                 </div>
@@ -814,7 +814,7 @@ $relacionados = [
                                 $index = 0;
                              foreach($imagenes as $imagen): ?>
                             <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
-                                <img src="./<?php echo $imagen['url']; ?>" class="main-carousel-image" alt="<?php echo $vehiculo['marca']; ?>">
+                                <img src="./admin/uploads/camiones/<?php echo $imagen['url']; ?>" class="main-carousel-image" alt="<?php echo $vehiculo['marca']; ?>">
                             </div>
                             <?php 
                                 $index++;
@@ -835,7 +835,7 @@ $relacionados = [
                             $index = 0;
                         foreach($imagenes as $imagen): ?>
                         <div class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" onclick="changeSlide(<?php echo $index; ?>)">
-                            <img src="./<?php echo $imagen['url']; ?>" alt="Miniatura <?php echo $index + 1; ?>">
+                            <img src="./admin/uploads/camiones/<?php echo $imagen['url']; ?>" alt="Miniatura <?php echo $index + 1; ?>">
                         </div>
                         <?php 
                             $index++;

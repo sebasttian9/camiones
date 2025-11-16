@@ -267,7 +267,7 @@ print_r($uno);
                     <div class="col-md-4">
                         <div class="vehicle-card">
                             <div style="position: relative;">
-                                <img src="./<?php echo $vehiculo['img_camion']; ?>" alt="<?php echo $vehiculo['modelo']; ?>" class="vehicle-image">
+                                <img src="./admin/uploads/camiones/<?php echo $vehiculo['img_camion']; ?>" alt="<?php echo $vehiculo['modelo']; ?>" class="vehicle-image">
                                 <?php if(isset($vehiculo['en_movimiento']) && $vehiculo['en_movimiento']): ?>
                                 <span class="badge-movimiento">
                                     <i class="fas fa-sync-alt"></i> COMUNICACIÓN EN MOVIMIENTO
