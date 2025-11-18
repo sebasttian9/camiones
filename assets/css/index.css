@@ -507,3 +507,18 @@
 .pagination .page-item {
     margin: 0 3px;
 }
+
+.form-container {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+.form-title {
+    color: #333;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+.required {
+    color: red;
+}

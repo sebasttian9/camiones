@@ -19,10 +19,10 @@ $totalPaginas = ceil($total / $porPagina);
 // $vehiculos = $camionesModel->obtenerCamiones();
 $marcas = $camionesModel->obtenerMarcas();
 $modelos = $camionesModel->obtenerModelos();
-print_r($vehiculos);
+// print_r($vehiculos);
 
 $uno = $camionesModel->obtenerCamionPorId(3);
-print_r($uno);
+// print_r($uno);
 // Datos de ejemplo para los vehículos
 // $vehiculos = [
 //     [
@@ -108,8 +108,8 @@ print_r($uno);
             <div class="d-flex justify-content-center flex-wrap">
                 <a href="#quienes-somos">QUIENES SOMOS</a>
                 <a href="#representaciones">REPRESENTACIONES</a>
-                <a href="#publicaciones">PUBLICACIONES</a>
-                <a href="#cobertura">COBERTURA</a>
+                <a href="#publicaciones">INICIAR SESION</a>
+                <a href="#cobertura">REGISTRARSE</a>
             </div>
         </div>
     </nav>
