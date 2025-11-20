@@ -1,13 +1,16 @@
 <?php
+session_start();
 
 require_once "./include/Camiones.php";
+
+var_dump($_SESSION);
 
 $camionesModel = new Camiones();
 
 
 // Configuración
 $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-$porPagina = 6;
+$porPagina = 10;
 
 // Obtener datos
 $vehiculos = $camionesModel->obtenerCamionesPaginados($pagina, $porPagina);
@@ -108,8 +111,8 @@ $uno = $camionesModel->obtenerCamionPorId(3);
             <div class="d-flex justify-content-center flex-wrap">
                 <a href="#quienes-somos">QUIENES SOMOS</a>
                 <a href="#representaciones">REPRESENTACIONES</a>
-                <a href="#publicaciones">INICIAR SESION</a>
-                <a href="#cobertura">REGISTRARSE</a>
+                <a href="#publicaciones" class="demo-button" data-bs-toggle="modal" data-bs-target="#loginModal">INICIAR SESION</a>
+                <a href="./registro.php#RegistroUsuario">REGISTRARSE</a>
             </div>
         </div>
     </nav>
@@ -444,10 +447,73 @@ $uno = $camionesModel->obtenerCamionPorId(3);
         </div>
     </div>
 
+        <!-- Modal de Login -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">
+                        <i class="fas fa-user-circle me-2"></i>Cuenta de Ingreso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Alerta de ejemplo -->
+                    <div class="alert alert-info d-none" id="alertMessage" role="alert">
+                        <i class="fas fa-info-circle me-2"></i><span id="alertText"></span>
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>Correo Electrónico
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   placeholder="correo@ejemplo.com" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-1"></i>Contraseña
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Ingrese su contraseña" required>
+                        </div>
+
+                        <div class="mb-4 d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    Recuérdame
+                                </label>
+                            </div>
+                            <a href="#" class="link-text">¿Olvidó su contraseña?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-login w-100 mb-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </button>
+
+                        <hr>
+
+                        <div class="divider">
+                            ¿No tiene una cuenta?
+                        </div>
+
+                        <a type="button" href="registro.php" class="btn btn-register w-100">
+                            <i class="fas fa-user-plus me-2"></i>Registrarse
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // alert('¡Hola desde JavaScript!');
-        console.log('JS cargado');
+        // console.log('JS cargado');
         // Asegurar que el carrusel se inicialice correctamente
         window.addEventListener('load', function() {
             console.log('JS cargado');
@@ -464,9 +530,81 @@ $uno = $camionesModel->obtenerCamionPorId(3);
                 // Forzar el inicio del carrusel
                 carousel.cycle();
                 
-                console.log('Carrusel inicializado correctamente');
+                // console.log('Carrusel inicializado correctamente');
             }
         });
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const rememberMe = document.getElementById('rememberMe').checked;
+            formData.append('remember', rememberMe);
+            
+            try {
+                const response = await fetch('login.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 1500);
+                } else {
+                    showAlert(data.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Error de conexión', 'danger');
+            }
+        });
+
+        // Agregar evento para "Olvidé mi contraseña"
+        document.querySelector('.link-text').addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const email = prompt('Ingrese su correo electrónico:');
+            
+            if (email) {
+                const formData = new FormData();
+                formData.append('email', email);
+                
+                try {
+                    const response = await fetch('forgot_password.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    showAlert(data.message, data.success ? 'success' : 'danger');
+                    
+                    // Para desarrollo, mostrar link si existe
+                    if (data.dev_link) {
+                        console.log('Link de recuperación:', data.dev_link);
+                    }
+                } catch (error) {
+                    showAlert('Error al enviar el correo', 'danger');
+                }
+            }
+        });
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            const alertText = document.getElementById('alertText');
+            
+            alert.className = `alert alert-${type}`;
+            alertText.textContent = message;
+            alert.classList.remove('d-none');
+            
+            setTimeout(() => {
+                alert.classList.add('d-none');
+            }, 3000);
+        }
     </script>
+
+
 </body>
 </html>

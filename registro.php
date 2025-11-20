@@ -1,66 +1,118 @@
 <?php
-
-require_once "./include/Camiones.php";
-
-$camionesModel = new Camiones();
+session_start();
+// Iniciar sesión para mensajes
 
 
-// Configuración
-$pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-$porPagina = 6;
+require_once "./include/Clientes.php";
 
-// Obtener datos
-$vehiculos = $camionesModel->obtenerCamionesPaginados($pagina, $porPagina);
-$total = $camionesModel->contarCamiones();
+    // Verificar que el formulario fue enviado por POST
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-// Calcular total de páginas
-$totalPaginas = ceil($total / $porPagina);
+        $clientesModel = new Clientes();
+        
+        // Recibir y sanitizar datos del formulario
+        $nombre_cliente = trim($_POST['nombre_cliente']);
+        $rut = trim($_POST['rut']);
+        $email = trim($_POST['email']);
+        $telefono = trim($_POST['telefono']);
+        $password_raw = $_POST['password'];
+        $telefono2 = $_POST['telefono2'];
+        $direccion = trim($_POST['direccion']);
+        
+        // Validaciones del lado del servidor
+        $errores = [];
+        
+        // Validar nombre
+        if (empty($nombre_cliente)) {
+            $errores[] = "El nombre del cliente es obligatorio";
+        }
+        
+        // Validar RUT
+        if (empty($rut) || !preg_match('/^[0-9]+-[0-9kK]{1}$/', $rut)) {
+            $errores[] = "El RUT debe tener formato válido (12345678-9)";
+        }
+        
+        // Validar email
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errores[] = "El email no es válido";
+        }
+        
+        // Validar teléfono
+        if (empty($telefono) || !preg_match('/^[0-9]{9}$/', $telefono)) {
+            $errores[] = "El teléfono debe tener 9 dígitos";
+        }
+        
+        // Validar contraseña (mínimo 6 caracteres, alfanumérica)
+        if (empty($password_raw) || !preg_match('/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/', $password_raw)) {
+            $errores[] = "La contraseña debe tener mínimo 6 caracteres y contener letras y números";
+        }
+        
+        // Validar estado
+        if (empty($telefono2) || !preg_match('/^[0-9]{9}$/', $telefono2)) {
+            $errores[] = "El teléfono debe tener 9 dígitos";
+        }
+        
+        // Validar dirección
+        if (empty($direccion)) {
+            $errores[] = "La dirección es obligatoria";
+        }
+        
+        // Si hay errores, redirigir con mensaje
+        if (!empty($errores)) {
+            $_SESSION['error'] = implode("<br>", $errores);
+            header("Location: registro.php");
+            exit();
+        }
+        
 
-// $vehiculos = $camionesModel->obtenerCamiones();
-$marcas = $camionesModel->obtenerMarcas();
-$modelos = $camionesModel->obtenerModelos();
-// print_r($vehiculos);
+       $validaCliente =  $clientesModel->validarCliente($rut, $email);
 
-$uno = $camionesModel->obtenerCamionPorId(3);
-// print_r($uno);
-// Datos de ejemplo para los vehículos
-// $vehiculos = [
-//     [
-//         'marca' => 'ASTRA',
-//         'modelo' => 'HD964 52 8X4',
-//         'precio' => 83000000,
-//         'precio_iva' => 98770000,
-//         'anio' => '2020',
-//         'combustible' => 'Diésel',
-//         'transmision' => 'Mecánico',
-//         'kilometraje' => '28.475 Kms',
-//         'imagen' => './assets/img/camion.webp'
-//     ],
-//     [
-//         'marca' => 'CHEVROLET',
-//         'modelo' => 'FTR 1524 4X2 MT',
-//         'precio' => 36900000,
-//         'precio_iva' => 43911000,
-//         'anio' => '2018',
-//         'combustible' => 'Diésel',
-//         'transmision' => 'Mecánico',
-//         'kilometraje' => '210.000 Kms',
-//         'imagen' => './assets/img/camion.webp',
-//         'en_movimiento' => false
-//     ],
-//     [
-//         'marca' => 'CHEVROLET',
-//         'modelo' => 'FTR 1524 4X2 MT',
-//         'precio' => 36900000,
-//         'precio_iva' => 43911000,
-//         'anio' => '2018',
-//         'combustible' => 'Diésel',
-//         'transmision' => 'Mecánico',
-//         'kilometraje' => '185.000 Kms',
-//         'imagen' => './assets/img/camion.webp',
-//         'en_movimiento' => false
-//     ]
-// ];
+        // Verificar si el RUT o email ya existen
+        // $stmt = $conn->prepare("SELECT id_cliente FROM tbl_clientes WHERE rut = :rut OR email = :email");
+        // $stmt->bindParam(':rut', $rut);
+        // $stmt->bindParam(':email', $email);
+        // $stmt->execute();
+        
+        if ($validaCliente > 0) {
+            $_SESSION['error'] = "El RUT o email ya están registrados en el sistema";
+            header("Location: registro.php");
+            exit();
+        }
+
+
+        $insertCliente = $clientesModel->creacionClientes($nombre_cliente,$rut, $email, $telefono, $password_raw, $telefono2, $direccion);
+        // Encriptar la contraseña
+        // $password_hash = password_hash($password_raw, PASSWORD_DEFAULT);
+        
+        // // Preparar la consulta de inserción
+        // $sql = "INSERT INTO tbl_clientes (nombre_cliente, rut, email, telefono, password, estado, direccion) 
+        //         VALUES (:nombre_cliente, :rut, :email, :telefono, :password, :estado, :direccion)";
+        
+        // $stmt = $conn->prepare($sql);
+        
+        // // Vincular parámetros
+        // $stmt->bindParam(':nombre_cliente', $nombre_cliente);
+        // $stmt->bindParam(':rut', $rut);
+        // $stmt->bindParam(':email', $email);
+        // $stmt->bindParam(':telefono', $telefono);
+        // $stmt->bindParam(':password', $password_hash);
+        // $stmt->bindParam(':estado', $estado);
+        // $stmt->bindParam(':direccion', $direccion);
+        
+        // Ejecutar la consulta
+        if ($insertCliente) {
+            $_SESSION['success'] = "Cliente registrado exitosamente";
+            header("Location: registro.php");
+            exit();
+        } else {
+            $_SESSION['error'] = "Error al registrar el cliente";
+            header("Location: registro.php");
+            exit();
+        }
+        
+    }
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -108,7 +160,7 @@ $uno = $camionesModel->obtenerCamionPorId(3);
             <div class="d-flex justify-content-center flex-wrap">
                 <a href="#quienes-somos">QUIENES SOMOS</a>
                 <a href="#representaciones">REPRESENTACIONES</a>
-                <a href="#publicaciones">INICIAR SESION</a>
+                <a href="#publicaciones" class="demo-button" data-bs-toggle="modal" data-bs-target="#loginModal">INICIAR SESION</a>
                 <a href="#cobertura">REGISTRARSE</a>
             </div>
         </div>
@@ -140,10 +192,10 @@ $uno = $camionesModel->obtenerCamionPorId(3);
             }
             ?>
             
-            <div class="form-container">
+            <div class="form-container" id="RegistroUsuario">
                 <h2 class="form-title text-center">Registro de Cliente</h2>
                 
-                <form id="formCliente" action="procesar_cliente.php" method="POST">
+                <form id="formCliente" action="#" method="POST">
                     
                     <!-- Nombre Cliente -->
                     <div class="mb-3">
@@ -180,6 +232,16 @@ $uno = $camionesModel->obtenerCamionPorId(3);
                         <div class="form-text">Ingrese 9 dígitos sin espacios ni guiones</div>
                     </div>
 
+                    <!-- Telefono Whatsapp -->
+                    <div class="mb-3">
+                        <label for="telefono2" class="form-label">
+                            WhatsApp <span class="required">*</span>
+                        </label>
+                        <input type="tel" class="form-control" id="telefono2" name="telefono2" 
+                               pattern="[0-9]{9}" placeholder="912345678" required>
+                        <div class="form-text">Ingrese 9 dígitos sin espacios ni guiones</div>
+                    </div>                    
+
                     <!-- Password -->
                     <div class="mb-3">
                         <label for="password" class="form-label">
@@ -188,18 +250,6 @@ $uno = $camionesModel->obtenerCamionPorId(3);
                         <input type="password" class="form-control" id="password" name="password" 
                                pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$" required>
                         <div class="form-text">Mínimo 6 caracteres, debe contener letras y números</div>
-                    </div>
-
-                    <!-- Estado -->
-                    <div class="mb-3">
-                        <label for="estado" class="form-label">
-                            Estado <span class="required">*</span>
-                        </label>
-                        <select class="form-select" id="estado" name="estado" required>
-                            <option value="">Seleccione un estado</option>
-                            <option value="activo">Activo</option>
-                            <option value="inactivo">Inactivo</option>
-                        </select>
                     </div>
 
                     <!-- Dirección -->
@@ -334,10 +384,73 @@ $uno = $camionesModel->obtenerCamionPorId(3);
         </div>
     </div>
 
+
+
+        <!-- Modal de Login -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">
+                        <i class="fas fa-user-circle me-2"></i>Cuenta de Ingreso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Alerta de ejemplo -->
+                    <div class="alert alert-info d-none" id="alertMessage" role="alert">
+                        <i class="fas fa-info-circle me-2"></i><span id="alertText"></span>
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>Correo Electrónico
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   placeholder="correo@ejemplo.com" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-1"></i>Contraseña
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Ingrese su contraseña" required>
+                        </div>
+
+                        <div class="mb-4 d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    Recuérdame
+                                </label>
+                            </div>
+                            <a href="#" class="link-text">¿Olvidó su contraseña?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-login w-100 mb-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </button>
+
+                        <hr>
+
+                        <div class="divider">
+                            ¿No tiene una cuenta?
+                        </div>
+
+                        <a type="button" href="registro.php" class="btn btn-register w-100">
+                            <i class="fas fa-user-plus me-2"></i>Registrarse
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // alert('¡Hola desde JavaScript!');
-        console.log('JS cargado');
+        // console.log('JS cargado');
         // Asegurar que el carrusel se inicialice correctamente
         window.addEventListener('load', function() {
             console.log('JS cargado');
@@ -354,7 +467,7 @@ $uno = $camionesModel->obtenerCamionPorId(3);
                 // Forzar el inicio del carrusel
                 carousel.cycle();
                 
-                console.log('Carrusel inicializado correctamente');
+                // console.log('Carrusel inicializado correctamente');
             }
         });
 // Validación adicional de contraseña con JavaScript
@@ -397,7 +510,80 @@ $uno = $camionesModel->obtenerCamionPorId(3);
             S = (S + T % 10 * (9 - M++ % 6)) % 11;
         return S ? S - 1 : 'k';
     }
-</script>
 
+          document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const rememberMe = document.getElementById('rememberMe').checked;
+            formData.append('remember', rememberMe);
+            
+            try {
+                const response = await fetch('login.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 1500);
+                } else {
+                    showAlert(data.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Error de conexión', 'danger');
+            }
+        });
+
+        // Agregar evento para "Olvidé mi contraseña"
+        document.querySelector('.link-text').addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const email = prompt('Ingrese su correo electrónico:');
+            
+            if (email) {
+                const formData = new FormData();
+                formData.append('email', email);
+
+                
+                try {
+                    const response = await fetch('forgot_password.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    // console.log(response);
+                    
+                    const data = await response.json();
+                    console.log(data)
+                    showAlert(data.message, data.success ? 'success' : 'danger');
+                    
+                    // Para desarrollo, mostrar link si existe
+                    if (data.dev_link) {
+                        console.log('Link de recuperación:', data.dev_link);
+                    }
+                } catch (error) {
+                    showAlert('Error al enviar el correo', 'danger');
+                }
+            }
+        });
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            const alertText = document.getElementById('alertText');
+            
+            alert.className = `alert alert-${type}`;
+            alertText.textContent = message;
+            alert.classList.remove('d-none');
+            
+            setTimeout(() => {
+                alert.classList.add('d-none');
+            }, 3000);
+        }
+</script>
 </body>
 </html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #c0392b;
+            --light-gray: #ecf0f1;
+            --dark-gray: #95a5a6;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            background: var(--primary-color);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-label {
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: var(--secondary-color);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            background: #ffffff;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(192, 57, 43, 0.15);
+            color: var(--secondary-color);
+        }
+
+        .form-control::placeholder {
+            color: var(--dark-gray);
+        }
+
+        .input-group-text {
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            color: var(--secondary-color);
+            border-radius: 6px 0 0 6px;
+        }
+
+        .btn-login {
+            background: var(--accent-color);
+            border: none;
+            padding: 0.75rem;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .btn-login:hover {
+            background: #a93226;
+            box-shadow: 0 4px 12px rgba(192, 57, 43, 0.3);
+        }
+
+        .btn-register {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+        }
+
+        .btn-register:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .form-check-label {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .link-text {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .link-text:hover {
+            color: #a93226;
+            text-decoration: underline;
+        }
+
+        .divider {
+            color: var(--dark-gray);
+            font-size: 0.85rem;
+            margin: 1.5rem 0 1rem 0;
+            text-align: center;
+        }
+
+        .alert {
+            border-radius: 6px;
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .demo-button {
+            background: var(--primary-color);
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .demo-button:hover {
+            background: var(--secondary-color);
+            box-shadow: 0 6px 20px rgba(44, 62, 80, 0.4);
+            transform: translateY(-2px);
+        }
+
+        hr {
+            border-color: #dee2e6;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón para abrir el modal -->
+    <button type="button" class="demo-button" data-bs-toggle="modal" data-bs-target="#loginModal">
+        <i class="fas fa-lock me-2"></i>Iniciar Sesión
+    </button>
+
+    <!-- Modal de Login -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">
+                        <i class="fas fa-user-circle me-2"></i>Cuenta de Ingreso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Alerta de ejemplo -->
+                    <div class="alert alert-info d-none" id="alertMessage" role="alert">
+                        <i class="fas fa-info-circle me-2"></i><span id="alertText"></span>
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>Correo Electrónico
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   placeholder="correo@ejemplo.com" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-1"></i>Contraseña
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Ingrese su contraseña" required>
+                        </div>
+
+                        <div class="mb-4 d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    Recuérdame
+                                </label>
+                            </div>
+                            <a href="#" class="link-text">¿Olvidó su contraseña?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-login w-100 mb-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </button>
+
+                        <hr>
+
+                        <div class="divider">
+                            ¿No tiene una cuenta?
+                        </div>
+
+                        <button type="button" class="btn btn-register w-100">
+                            <i class="fas fa-user-plus me-2"></i>Registrarse
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Abrir modal automáticamente al cargar (opcional)
+        window.addEventListener('DOMContentLoaded', () => {
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+        });
+
+        // Reemplazar el evento submit del formulario
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // console.log(this)
+            
+            const formData = new FormData(this);
+                // // ver el contenido
+                // for (const [key, value] of formData.entries()) {
+                //     console.log(key, value);
+                // }
+            // console.log(formData)
+            
+            try {
+                const response = await fetch('login.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+ 
+                
+                const data = await response.json();
+
+                //                console.log(data.message);
+                // return;
+                
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 1500);
+                } else {
+                    showAlert(data.message, 'danger');
+                }
+            } catch (error) {
+                alert(error);
+                showAlert('Error de conexión', 'danger');
+            }
+        });
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            const alertText = document.getElementById('alertText');
+            
+            alert.className = `alert alert-${type}`;
+            alertText.textContent = message;
+            alert.classList.remove('d-none');
+            
+            setTimeout(() => {
+                alert.classList.add('d-none');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

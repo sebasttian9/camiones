@@ -11,36 +11,157 @@ class Clientes {
         $this->conn = $conexion->conectar(); // Solo una vez
     }
 
-    public function creacionClientes() {
+    public function creacionClientes($nombre_cliente,$rut, $email, $telefono, $password_raw, $telefono2, $direccion) {
         try {
-            $sql = "SELECT a.*, b.marca_nombre as marca,c.nombre_modelo as modelo, (select url from tbl_imagenes where camion_id = a.id_camion and orden = 1 limit 1) as img_camion 
-                    FROM tbl_camiones a 
-                    left join tbl_marcas b on a.marca_id = b.id_marca
-                    left join tbl_modelos c on a.modelo_id = c.id_modelo
-                    ORDER BY id_camion ASC;";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Encriptar la contraseña
+        $password_hash = password_hash($password_raw, PASSWORD_DEFAULT);
+        
+        // Preparar la consulta de inserción
+        $sql = "INSERT INTO tbl_clientes (nombre_cliente, rut, email, telefono, password, estado, direccion, telefono2) 
+                VALUES (:nombre_cliente, :rut, :email, :telefono, :password, 1, :direccion, :telefono2)";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        // Vincular parámetros
+        $stmt->bindParam(':nombre_cliente', $nombre_cliente);
+        $stmt->bindParam(':rut', $rut);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':telefono', $telefono);
+        $stmt->bindParam(':password', $password_hash);
+        $stmt->bindParam(':telefono2', $telefono2);
+        $stmt->bindParam(':direccion', $direccion);
+
+        return $stmt->execute();
+
 
         } catch (PDOException $e) {
-            echo "Error al obtener camiones: " . $e->getMessage();
+            echo "Error al crear cliente : " . $e->getMessage();
             return [];
         }
     }
 
-    // Camion por ID
-    public function obtenerCamionPorId($id) {
-        try {
-            $sql = "SELECT a.*, b.marca_nombre as marca,c.nombre_modelo as modelo, (select url from tbl_imagenes where camion_id = a.id_camion and orden = 1 limit 1) as img_camion 
-                    FROM tbl_camiones a 
-                    left join tbl_marcas b on a.marca_id = b.id_marca
-                    left join tbl_modelos c on a.modelo_id = c.id_modelo
-                    WHERE a.id_camion = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$id]);
+    public function login($email){
 
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            //code...
+                                // Buscar usuario por email y estado activo
+            $stmt = $this->conn->prepare("SELECT * FROM tbl_clientes WHERE email = ? AND estado = 1 LIMIT 1");
+            $stmt->execute([$email]);
+            $usuario = $stmt->fetch();
+
+            return $usuario;
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return null;
+        }
+
+    }
+
+    public function verificarToken($hashedToken){
+
+        try {
+
+            $stmt = $this->conn->prepare("
+            SELECT id_cliente FROM tbl_clientes 
+            WHERE reset_token = ? 
+            AND reset_token_expiry > NOW() 
+            AND estado = 1
+            LIMIT 1
+        ");
+        $stmt->execute([$hashedToken]);
+        $usuario = $stmt->fetch();
+
+        return $usuario;
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return null;
+        }
+
+    }
+
+
+        public function actualizarContraseña($hashedPassword,$id_cliente){
+
+        try {
+
+            $stmt = $this->conn->prepare("
+                UPDATE tbl_clientes 
+                SET password = ?, reset_token = NULL, reset_token_expiry = NULL
+                WHERE id_cliente = ?
+            ");
+            $stmt->execute([$hashedPassword, $id_cliente]);
+
+        // return $usuario;
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return null;
+        }
+
+    }
+
+
+        public function guardarToken($hashedResetToken, $expiry, $id_cliente){
+
+        try {
+            //code...
+                                // Buscar usuario por email y estado activo
+            // $stmt = $this->conn->prepare("SELECT * FROM tbl_clientes WHERE email = ? AND estado = 1 LIMIT 1");
+
+            $stmt = $this->conn->prepare("
+                UPDATE tbl_clientes 
+                SET reset_token = ?, reset_token_expiry = FROM_UNIXTIME(?)
+                WHERE id_cliente = ?
+            ");
+            $stmt->execute([$hashedResetToken, $expiry, $id_cliente]);
+
+            // return $usuario;
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return null;
+        }
+
+    }
+
+
+        public function guardarTokenCookies($hashedToken, $expiry, $id_cliente){
+
+        try {
+            //code...
+                                // Buscar usuario por email y estado activo
+            // $stmt = $this->conn->prepare("SELECT * FROM tbl_clientes WHERE email = ? AND estado = 1 LIMIT 1");
+
+            $stmt = $this->conn->prepare("
+                     UPDATE tbl_clientes 
+                     SET remember_token = ?, token_expiry = FROM_UNIXTIME(?)
+                     WHERE id_cliente = ?
+            ");
+            $stmt->execute([$hashedToken, $expiry, $id_cliente]);
+
+            // return $usuario;
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return null;
+        }
+
+    }
+
+    // // Verificar si el RUT o email ya existen.
+    public function validarCliente($rut, $email) {
+        try {
+        
+        $stmt = $this->conn->prepare("SELECT id_cliente FROM tbl_clientes WHERE rut = :rut OR email = :email");
+        $stmt->bindParam(':rut', $rut);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+
+            return $stmt->rowCount();
 
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
