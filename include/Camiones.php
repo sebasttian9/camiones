@@ -64,9 +64,11 @@ class Camiones {
     }
 
             // Modelos
-    public function obtenerModelos() {
+    public function obtenerModelos($id_marca) {
         try {
-            $sql = "SELECT * FROM tbl_modelos ORDER BY nombre_modelo asc";
+            $sql = "SELECT * FROM tbl_modelos where marca_id = $id_marca ORDER BY nombre_modelo asc";
+            // echo $sql;
+            // exit;
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
 
@@ -94,7 +96,7 @@ class Camiones {
     }
 
     // camiones paginados
-    public function obtenerCamionesPaginados($pagina = 1, $porPagina = 10) {
+    public function obtenerCamionesPaginados($pagina = 1, $porPagina = 10, $tipo_auto="", $SelectMarca="", $agno_inicio="", $agno_fin="", $precio="", $transmision="") {
         try {
             $inicio = ($pagina - 1) * $porPagina;
 

@@ -4,6 +4,7 @@ session_start();
 require_once "./include/Camiones.php";
 
 var_dump($_SESSION);
+var_dump($_POST);
 
 $camionesModel = new Camiones();
 
@@ -13,7 +14,11 @@ $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 $porPagina = 10;
 
 // Obtener datos
+if($_POST){
+$vehiculos = $camionesModel->obtenerCamionesPaginados($pagina, $porPagina, $_POST['tipo_auto'], $_POST['SelectMarca'], $_POST['agno_inicio'], $_POST['agno_fin'], $_POST['precio'], $_POST['transmision']);
+}else{
 $vehiculos = $camionesModel->obtenerCamionesPaginados($pagina, $porPagina);
+}
 $total = $camionesModel->contarCamiones();
 
 // Calcular total de páginas
@@ -21,7 +26,7 @@ $totalPaginas = ceil($total / $porPagina);
 
 // $vehiculos = $camionesModel->obtenerCamiones();
 $marcas = $camionesModel->obtenerMarcas();
-$modelos = $camionesModel->obtenerModelos();
+// $modelos = $camionesModel->obtenerModelos();
 // print_r($vehiculos);
 
 $uno = $camionesModel->obtenerCamionPorId(3);
@@ -209,9 +214,10 @@ $uno = $camionesModel->obtenerCamionPorId(3);
     <!-- Search Filters -->
     <div class="container">
         <div class="search-filters">
+            <form action="#" method="POST">
             <div class="row g-3">
                 <div class="col-md-3 col-6">
-                    <select class="form-select filter-select">
+                    <select class="form-select filter-select" name="tipo_auto" id="tipo_auto">
                         <option selected>Camiones</option>
                         <option>Buses</option>
                         <option>Maquinaria</option>
@@ -226,7 +232,7 @@ $uno = $camionesModel->obtenerCamionPorId(3);
                     </select>
                 </div>
                 <div class="col-md-2 col-6">
-                    <select class="form-select filter-select">
+                    <select class="form-select filter-select" id="Selectmodelo" nombre="Selectmodelo">
                         <option selected value="0">Modelos</option>
                         <?php foreach($modelos as $modelo): ?>
                             <option value="<?php echo $modelo['id_modelo']; ?>"><?php echo $modelo['nombre_modelo']; ?></option>
@@ -234,17 +240,30 @@ $uno = $camionesModel->obtenerCamionPorId(3);
                     </select>
                 </div>
                 <div class="col-md-2 col-6">
-                    <select class="form-select filter-select">
-                        <option selected>Año Hasta</option>
+                    <select class="form-select filter-select" id="agno_inicio" name="agno_inicio">
+                        <option selected>Año inicio</option>
+                    </select>
+                </div>
+                                <div class="col-md-2 col-6">
+                    <select class="form-select filter-select" id="agno_fin" name="agno_fin">
+                        <option selected>Año Fin</option>
                     </select>
                 </div>
                 <div class="col-md-4 col-6">
-                    <select class="form-select filter-select">
-                        <option selected>Precio</option>
+                    <select class="form-select filter-select" id="precio" name="precio">
+                        <option value="20000000">Hasta $20.000.000</option>
+                        <option value="30000000">Hasta $30.000.000</option>
+                        <option value="40000000">Hasta $40.000.000</option>
+                        <option value="50000000">hasta $50.000.000</option>
+                        <option value="60000000">Hasta $60.000.000</option>
+                        <option value="70000000">Hasta $70.000.000</option>
+                        <option value="80000000">Hasta $80.000.000</option>
+                        <option value="90000000">Hasta $90.000.000</option>
+                        <option value="100000000">Hasta $100.000.000</option>
                     </select>
                 </div>
                 <div class="col-md-4 col-6">
-                    <select class="form-select filter-select">
+                    <select class="form-select filter-select" id="transmision" name="transmision">
                         <option selected value="0">Transmisión</option>
                         <option value="1">Manual</option>
                         <option value="2">Automatico</option>
@@ -254,9 +273,10 @@ $uno = $camionesModel->obtenerCamionPorId(3);
                             <input type="submit" class="btn btn-primary btn-lg" value="Buscar" />
                 </div>
             </div>
-            <div class="results-count mt-3">
+            <!-- <div class="results-count mt-3">
                 Mostrando 178 resultados.
-            </div>
+            </div> -->
+            </form>
         </div>
     </div>
 
@@ -512,6 +532,9 @@ $uno = $camionesModel->obtenerCamionPorId(3);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+
+        const selectModelo = document.getElementById('Selectmodelo');
+        const selectMarca = document.getElementById('SelectMarca');
         // alert('¡Hola desde JavaScript!');
         // console.log('JS cargado');
         // Asegurar que el carrusel se inicialice correctamente
@@ -603,6 +626,58 @@ $uno = $camionesModel->obtenerCamionPorId(3);
                 alert.classList.add('d-none');
             }, 3000);
         }
+
+              // Función para cargar modelos según la marca seleccionada
+        function cargarModelos(marcaId) {
+            // loadingModelo.classList.add('show');
+            // selectModelo.disabled = true;
+            // resultDiv.classList.remove('show');
+            
+            // Crear objeto XMLHttpRequest
+            const xhr = new XMLHttpRequest();
+            
+            // Configurar la petición con el parámetro marca_id
+            xhr.open('GET', 'get_modelos.php?marca_id=' + marcaId, true);
+            
+            // Manejar la respuesta
+            xhr.onload = function() {
+                // loadingModelo.classList.remove('show');
+                
+                if (xhr.status === 200) {
+                    // Insertar el HTML recibido directamente en el select
+                    selectModelo.innerHTML = xhr.responseText;
+                    selectModelo.disabled = false;
+                } else {
+                    console.error('Error al cargar modelos:', xhr.status);
+                    selectModelo.innerHTML = '<option value="">Error al cargar modelos</option>';
+                    selectModelo.disabled = false;
+                }
+            };
+            
+            // Manejar errores
+            xhr.onerror = function() {
+                // loadingModelo.classList.remove('show');
+                console.error('Error de conexión');
+                selectModelo.innerHTML = '<option value="">Error de conexión</option>';
+                // selectModelo.disabled = false;
+            };
+            
+            // Enviar la petición
+            xhr.send();
+        }
+
+                // Event listener para cambio de marca
+        selectMarca.addEventListener('change', function() {
+            const marcaId = this.value;
+            
+            if (marcaId) {
+                cargarModelos(marcaId);
+            } else {
+                // selectModelo.disabled = true;
+                selectModelo.innerHTML = '<option value="">-- Primero seleccione una marca --</option>';
+                // resultDiv.classList.remove('show');
+            }
+        });
     </script>
 
 
