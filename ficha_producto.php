@@ -768,9 +768,25 @@ $relacionados = [
                     </div>
                 </div>
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <a href="portal_automotriz.php#catalogo" class="back-button">
+                    <form action="portal_automotriz2.php#catalogo" method="POST">
+                                    <input type="hidden" name="cam" value="<?php echo $vehiculo['id_camion']; ?>">
+                                    <input type="hidden" name="tipo_auto" value="<?php echo isset($_GET['tipo_auto']) ? $_GET['tipo_auto'] : '0';  ?>">
+                                    <input type="hidden" name="SelectMarca" value="<?php echo isset($_GET['SelectMarca']) ? $_GET['SelectMarca'] : '0'; ?>">
+                                    <input type="hidden" name="Selectmodelo" value="<?php echo isset($_GET['Selectmodelo']) ? $_GET['Selectmodelo'] : '0'; ?>">
+                                    <input type="hidden" name="agno_inicio" value="<?php echo isset($_GET['agno_inicio']) ? $_GET['agno_inicio'] : '0'; ?>">
+                                    <input type="hidden" name="agno_fin" value="<?php echo isset($_GET['agno_fin']) ? $_GET['agno_fin'] : '0'; ?>">
+                                    <input type="hidden" name="precio" value="<?php echo isset($_GET['precio']) ? $_GET['precio'] : '0'; ?>">
+                                    <input type="hidden" name="transmision" value="<?php echo isset($_GET['transmision']) ? $_GET['transmision'] : '0'; ?>">
+                                    <input type="hidden" name="pagina" value="<?php echo isset($_GET['pagina']) ? $_GET['pagina'] : '1'; ?>">
+                                    <!-- <input type="submit" class="back-button" value="VER MÁS"></input> -->
+                                    <button type="submit" class="back-button" name="btn_volver">
+                                        <i class="fas fa-arrow-left"></i> Volver al catálogo
+                                    </button>
+
+                    </form>
+                    <!-- <a href="portal_automotriz.php#catalogo" class="back-button">
                         <i class="fas fa-arrow-left"></i> Volver al catálogo
-                    </a>
+                    </a> -->
                 </div>
             </div>
 

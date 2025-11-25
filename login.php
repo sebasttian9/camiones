@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode([
                 'success' => true,
                 'message' => 'Inicio de sesión exitoso',
-                'redirect' => 'portal_automotriz.php'
+                'redirect' => './admin/index_crud.php'
             ]);
         } else {
             echo json_encode([
