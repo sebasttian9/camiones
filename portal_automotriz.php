@@ -3,23 +3,76 @@ session_start();
 
 require_once "./include/Camiones.php";
 
-var_dump($_SESSION);
-var_dump($_POST);
+// var_dump($_SESSION);
+// var_dump($_POST);
 
 $camionesModel = new Camiones();
 
 
 // Configuración
 $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-$porPagina = 3;
+$porPagina = 5;
+
+
+// Capturar filtros desde POST o GET
+$filtros = [
+    'tipo_auto' => $_POST['tipo_auto'] ?? $_GET['tipo_auto'] ?? '0',
+    'SelectMarca' => $_POST['SelectMarca'] ?? $_GET['SelectMarca'] ?? '0',
+    'Selectmodelo' => $_POST['Selectmodelo'] ?? $_GET['Selectmodelo'] ?? '0',
+    'agno_inicio' => $_POST['agno_inicio'] ?? $_GET['agno_inicio'] ?? '0',
+    'agno_fin' => $_POST['agno_fin'] ?? $_GET['agno_fin'] ?? '0',
+    'precio' => $_POST['precio'] ?? $_GET['precio'] ?? '0',
+    'transmision' => $_POST['transmision'] ?? $_GET['transmision'] ?? '0'
+];
+
+// Si vienen filtros por POST, redirigir a GET para mantener estado
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $params = array_filter($filtros); // Eliminar valores vacíos
+    // $params['pagina'] = 1; // Reiniciar a página 1 en nueva búsqueda
+    $params['pagina'] = isset($_POST['pagina']) ? $_POST['pagina'] : 1; 
+    $queryString = http_build_query($params);
+    header("Location: " . $_SERVER['PHP_SELF'] . "?" . $queryString);
+    exit;
+}
+
+// Obtener datos con filtros
+$hayFiltros = array_filter($filtros) ? true : false;
+var_dump($filtros);
+
+if ($hayFiltros) {
+    $vehiculos = $camionesModel->obtenerCamionesPaginados(
+        $pagina, 
+        $porPagina, 
+        $filtros['tipo_auto'], 
+        $filtros['SelectMarca'], 
+        $filtros['Selectmodelo'], 
+        $filtros['agno_inicio'], 
+        $filtros['agno_fin'], 
+        $filtros['precio'], 
+        $filtros['transmision']
+    );
+    $total = $camionesModel->contarCamionesFiltro(
+        $filtros['tipo_auto'], 
+        $filtros['SelectMarca'], 
+        $filtros['Selectmodelo'], 
+        $filtros['agno_inicio'], 
+        $filtros['agno_fin'], 
+        $filtros['precio'], 
+        $filtros['transmision']
+    );
+} else {
+    $vehiculos = $camionesModel->obtenerCamionesPaginados($pagina, $porPagina);
+    $total = $camionesModel->contarCamiones();
+}
+
 
 // Obtener datos
-if($_POST){
-$vehiculos = $camionesModel->obtenerCamionesPaginados($pagina, $porPagina, $_POST['tipo_auto'], $_POST['SelectMarca'], $_POST['Selectmodelo'],  $_POST['agno_inicio'], $_POST['agno_fin'], $_POST['precio'], $_POST['transmision']);
-}else{
-$vehiculos = $camionesModel->obtenerCamionesPaginados($pagina, $porPagina);
-}
-$total = $camionesModel->contarCamiones();
+// if($_POST){
+// $vehiculos = $camionesModel->obtenerCamionesPaginados($pagina, $porPagina, $_POST['tipo_auto'], $_POST['SelectMarca'], $_POST['Selectmodelo'],  $_POST['agno_inicio'], $_POST['agno_fin'], $_POST['precio'], $_POST['transmision']);
+// }else{
+// $vehiculos = $camionesModel->obtenerCamionesPaginados($pagina, $porPagina);
+// }
+// $total = $camionesModel->contarCamiones();
 
 // Calcular total de páginas
 $totalPaginas = ceil($total / $porPagina);
@@ -28,10 +81,23 @@ $totalPaginas = ceil($total / $porPagina);
 $marcas = $camionesModel->obtenerMarcas();
 $tipo_vehiculo = $camionesModel->obtenerTiposAutos();
 
+// Función auxiliar para generar URLs de paginación
+function generarUrlPaginacion($numeroPagina, $filtros) {
+    $params = array_filter($filtros);
+    $params['pagina'] = $numeroPagina;
+    return '?' . http_build_query($params);
+}
+
+function generarUrlPaginacionFicha($numeroPagina, $filtros) {
+    $params = array_filter($filtros);
+    $params['pagina'] = $numeroPagina;
+    return '&' . http_build_query($params);
+}
+
 // $modelos = $camionesModel->obtenerModelos();
 // print_r($vehiculos);
 
-$uno = $camionesModel->obtenerCamionPorId(3);
+// $uno = $camionesModel->obtenerCamionPorId(3);
 // print_r($uno);
 // Datos de ejemplo para los vehículos
 // $vehiculos = [
@@ -83,6 +149,17 @@ $uno = $camionesModel->obtenerCamionPorId(3);
     <link rel="stylesheet" href="./assets/css/index.css">
 </head>
 <body>
+    <?php
+// En login.php, mostrar mensajes según parámetros GET
+
+if (isset($_GET['timeout']) && $_GET['timeout'] == '1') {
+    echo '<div class="alert alert-warning">Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.</div>';
+}
+
+if (isset($_GET['logout']) && $_GET['logout'] == 'success') {
+    echo '<div class="alert alert-success">Has cerrado sesión correctamente.</div>';
+}
+?>
     <!-- Top Header -->
     <div class="top-header">
         <div class="container">
@@ -118,8 +195,13 @@ $uno = $camionesModel->obtenerCamionPorId(3);
             <div class="d-flex justify-content-center flex-wrap">
                 <a href="#quienes-somos">QUIENES SOMOS</a>
                 <a href="#representaciones">REPRESENTACIONES</a>
+                <?php if(isset($_SESSION['user_id']) && $_SESSION['user_id']!=''){ ?>
+                <a href="./admin/index_crud.php" class="demo-button" >ADMINISTRACION</a>
+                <a href="./logout.php">CERRAR SESION</a>
+                <?php }else { ?> 
                 <a href="#publicaciones" class="demo-button" data-bs-toggle="modal" data-bs-target="#loginModal">INICIAR SESION</a>
                 <a href="./registro.php#RegistroUsuario">REGISTRARSE</a>
+                <?php } ?>
             </div>
         </div>
     </nav>
@@ -214,7 +296,7 @@ $uno = $camionesModel->obtenerCamionPorId(3);
     </div>
 
     <!-- Search Filters -->
-    <div class="container">
+    <div class="container" id="filtros">
         <div class="search-filters">
             <form action="portal_automotriz.php#catalogo" method="POST">
             <div class="row g-3">
@@ -285,6 +367,7 @@ $uno = $camionesModel->obtenerCamionPorId(3);
                 </div>
                 <div class="col-md-2 col-12 d-grid gap-2"> <!-- d-grid gap-2 ocupa todo el ancho -->
                             <input type="submit" class="btn btn-primary btn-lg" value="Buscar" />
+                            <a href="<?= $_SERVER['PHP_SELF'] ?>#filtros">Limpiar filtros</a>
                 </div>
             </div>
             <div class="results-count mt-3">
@@ -328,17 +411,18 @@ $uno = $camionesModel->obtenerCamionPorId(3);
                                     <span class="spec-item"><?php echo $vehiculo['transmision']; ?></span>
                                     <span class="spec-item"><?php echo $vehiculo['kilometraje']; ?></span>
                                 </div>
-                                <form action="ficha_producto.php" method="POST">
+                                <!-- <form action="ficha_producto.php" method="POST">
                                     <input type="hidden" name="cam" value="<?php echo $vehiculo['id_camion']; ?>">
-                                    <input type="hidden" name="tipo_auto" value="<?php echo $_POST['tipo_auto']; ?>">
-                                    <input type="hidden" name="SelectMarca" value="<?php echo $_POST['SelectMarca']; ?>">
-                                    <input type="hidden" name="Selectmodelo" value="<?php echo $_POST['Selectmodelo']; ?>">
-                                    <input type="hidden" name="agno_inicio" value="<?php echo $_POST['agno_inicio']; ?>">
-                                    <input type="hidden" name="agno_fin" value="<?php echo $_POST['agno_fin']; ?>">
-                                    <input type="hidden" name="precio" value="<?php echo $_POST['precio']; ?>">
-                                    <input type="hidden" name="transmision" value="<?php echo $_POST['transmision']; ?>">
+                                    <input type="hidden" name="tipo_auto" value="<?php echo $_GET['tipo_auto']; ?>">
+                                    <input type="hidden" name="SelectMarca" value="<?php echo $_GET['SelectMarca']; ?>">
+                                    <input type="hidden" name="Selectmodelo" value="<?php echo $_GET['Selectmodelo']; ?>">
+                                    <input type="hidden" name="agno_inicio" value="<?php echo $_GET['agno_inicio']; ?>">
+                                    <input type="hidden" name="agno_fin" value="<?php echo $_GET['agno_fin']; ?>">
+                                    <input type="hidden" name="precio" value="<?php echo $_GET['precio']; ?>">
+                                    <input type="hidden" name="transmision" value="<?php echo $_GET['transmision']; ?>">
                                     <input type="submit" class="btn btn-ver-mas" value="VER MÁS"/>
-                                </from>
+                                </from> -->
+                                <a class="btn btn-ver-mas" href="ficha_producto.php?cam=<?php echo $vehiculo['id_camion']."".generarUrlPaginacionFicha($pagina, $filtros) ?>">VER MÁS</a>
                             </div>
                         </div>
                     </div>
@@ -352,23 +436,54 @@ $uno = $camionesModel->obtenerCamionPorId(3);
 
                                 <!-- Botón Anterior -->
                                 <li class="page-item <?= ($pagina <= 1) ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="?pagina=<?= $pagina - 1 ?>#catalogo" tabindex="-1">Anterior</a>
+                                    <a class="page-link" href="<?= generarUrlPaginacion($pagina - 1, $filtros) ?>#catalogo" tabindex="-1">Anterior</a>
                                 </li>
 
                                 <!-- Números -->
                                 <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
                                     <li class="page-item <?= ($i == $pagina) ? 'active' : '' ?>">
-                                        <a class="page-link" href="?pagina=<?= $i ?>#catalogo"><?= $i ?></a>
+                                        <a class="page-link" href="<?= generarUrlPaginacion($i, $filtros) ?>#catalogo"><?= $i ?></a>
                                     </li>
                                 <?php endfor; ?>
 
                                 <!-- Botón Siguiente -->
                                 <li class="page-item <?= ($pagina >= $totalPaginas) ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="?pagina=<?= $pagina + 1 ?>#catalogo">Siguiente</a>
+                                    <a class="page-link" href="<?= generarUrlPaginacion($pagina + 1, $filtros) ?>#catalogo">Siguiente</a>
                                 </li>
 
                             </ul>
                         </nav>
+
+
+
+                            <!-- Paginación -->
+    <!-- <div class="pagination">
+        <?php if ($pagina > 1): ?>
+            <a href="<?= generarUrlPaginacion(1, $filtros) ?>">« Primera</a>
+            <a href="<?= generarUrlPaginacion($pagina - 1, $filtros) ?>">‹ Anterior</a>
+        <?php endif; ?>
+
+        <?php
+        // Mostrar páginas cercanas
+        $rango = 2;
+        for ($i = max(1, $pagina - $rango); $i <= min($totalPaginas, $pagina + $rango); $i++):
+        ?>
+            <?php if ($i == $pagina): ?>
+                <span class="active"><?= $i ?></span>
+            <?php else: ?>
+                <a href="<?= generarUrlPaginacion($i, $filtros) ?>"><?= $i ?></a>
+            <?php endif; ?>
+        <?php endfor; ?>
+
+        <?php if ($pagina < $totalPaginas): ?>
+            <a href="<?= generarUrlPaginacion($pagina + 1, $filtros) ?>">Siguiente ›</a>
+            <a href="<?= generarUrlPaginacion($totalPaginas, $filtros) ?>">Última »</a>
+        <?php endif; ?>
+    </div> -->
+
+    <p style="text-align: center; color: #666;">
+        Página <?= $pagina ?> de <?= $totalPaginas ?>
+    </p>
             </div>
 
             <!-- Sidebar -->
@@ -389,8 +504,10 @@ $uno = $camionesModel->obtenerCamionPorId(3);
             <div class="row">
                 <!-- Sobre Nosotros -->
                 <div class="col-lg-4 col-md-6 footer-section">
-                    <div class="footer-logo">
-                        <i class="fas fa-hand-pointer"></i> ClicChile
+                    <div class="footer-logo d-flex justify-content-center align-items-center">
+                        <!-- <div class="col-md-3 div-logo"> -->
+                            <img src="./assets/img/logo_clichile.jpeg" class="logo_clic_footer" alt="">
+                        <!-- </div> -->
                     </div>
                     <p style="color: #ccc; line-height: 1.8;">
                         Tu portal automotriz líder en Chile. Conectamos a compradores y vendedores de vehículos comerciales con la mejor tecnología y servicio del mercado.

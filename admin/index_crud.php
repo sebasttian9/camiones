@@ -1,5 +1,7 @@
 <?php
+require_once 'valida_sesion.php';
 // index_crud.php - Listado de camiones
+var_dump($_SESSION);
 
 require_once 'db_config.php';
 require_once 'camion_class.php';
@@ -20,8 +22,8 @@ if ($busqueda) {
     $camiones = $camionObj->buscar($busqueda);
     $totalCamiones = count($camiones);
 } else {
-    $camiones = $camionObj->obtenerTodos($porPagina, $offset);
-    $totalCamiones = $camionObj->contarTotal();
+    $camiones = $camionObj->obtenerTodos($porPagina, $offset, $_SESSION['user_id']);
+    $totalCamiones = $camionObj->contarTotal($_SESSION['user_id']);
 }
 
 $totalPaginas = ceil($totalCamiones / $porPagina);
@@ -35,7 +37,7 @@ $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : 'success';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Camiones</title>
+    <title>Gestión de Publicaciones</title>
     <style>
         * {
             margin: 0;
@@ -199,7 +201,10 @@ $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : 'success';
 </head>
 <body>
     <div class="container">
-        <h1>📦 Gestión de Camiones</h1>
+        <h1>📦 Gestión de Publicaciones</h1>
+        <p><b>Bienvenido :</b> <?php echo $_SESSION['user_name']; ?></p>
+        <p><a href="../logout.php">Cerrar sesion</a></p>
+        <br>
         
         <?php if ($mensaje): ?>
             <div class="alert alert-<?php echo $tipo; ?>">

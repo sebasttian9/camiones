@@ -16,10 +16,10 @@ class Camion {
         try {
             $query = "INSERT INTO {$this->table} 
                      (descripcion, precio, ciudad, agno, combustible, transmision, 
-                      kilometraje, color, cilindrada, marca_id, modelo_id) 
+                      kilometraje, color, cilindrada, marca_id, modelo_id, cliente_id) 
                      VALUES 
                      (:descripcion, :precio, :ciudad, :agno, :combustible, :transmision, 
-                      :kilometraje, :color, :cilindrada, :marca_id, :modelo_id)";
+                      :kilometraje, :color, :cilindrada, :marca_id, :modelo_id, :cliente_id)";
             
             $stmt = $this->conn->prepare($query);
             
@@ -34,6 +34,7 @@ class Camion {
             $stmt->bindParam(':cilindrada', $datos['cilindrada']);
             $stmt->bindParam(':marca_id', $datos['marca_id']);
             $stmt->bindParam(':modelo_id', $datos['modelo_id']);
+            $stmt->bindParam(':cliente_id', $datos['cliente_id']);
             
             if($stmt->execute()) {
                 return $this->conn->lastInsertId();
@@ -46,9 +47,9 @@ class Camion {
     }
     
     // READ - Obtener todos los camiones
-    public function obtenerTodos($limit = null, $offset = 0) {
+    public function obtenerTodos($limit = null, $offset = 0, $cliente_id) {
         try {
-            $query = "SELECT * FROM {$this->table} ORDER BY id_camion DESC";
+            $query = "SELECT * FROM {$this->table} WHERE cliente_id = $cliente_id ORDER BY id_camion DESC";
             
             if ($limit !== null) {
                 $query .= " LIMIT :limit OFFSET :offset";
@@ -145,9 +146,9 @@ class Camion {
     }
     
     // Contar total de camiones
-    public function contarTotal() {
+    public function contarTotal($cliente_id) {
         try {
-            $query = "SELECT COUNT(*) as total FROM {$this->table}";
+            $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE cliente_id = $cliente_id";
             $stmt = $this->conn->query($query);
             $result = $stmt->fetch();
             return $result['total'];

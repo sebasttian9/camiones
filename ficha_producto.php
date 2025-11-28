@@ -95,6 +95,13 @@ $relacionados = [
             --success-color: #25d366;
         }
 
+        .logo_clic_footer {
+                width: 300px;
+                height: auto;
+                display: inline-block; /* elimina espacios debajo de la imagen */
+                border-radius: 10%;        
+        }           
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -768,7 +775,7 @@ $relacionados = [
                     </div>
                 </div>
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <form action="portal_automotriz2.php#catalogo" method="POST">
+                    <form action="portal_automotriz.php#catalogo" method="POST">
                                     <input type="hidden" name="cam" value="<?php echo $vehiculo['id_camion']; ?>">
                                     <input type="hidden" name="tipo_auto" value="<?php echo isset($_GET['tipo_auto']) ? $_GET['tipo_auto'] : '0';  ?>">
                                     <input type="hidden" name="SelectMarca" value="<?php echo isset($_GET['SelectMarca']) ? $_GET['SelectMarca'] : '0'; ?>">
@@ -936,7 +943,12 @@ $relacionados = [
                 <!-- Sobre Nosotros -->
                 <div class="col-lg-4 col-md-6 footer-section">
                     <div class="footer-logo">
-                        <i class="fas fa-hand-pointer"></i> ClicChile
+                    <div class="footer-logo d-flex justify-content-center align-items-center">
+                        <!-- <div class="col-md-3 div-logo"> -->
+                            <img src="./assets/img/logo_clichile.jpeg" class="logo_clic_footer" alt="">
+                        <!-- </div> -->
+                    </div>
+                        <!-- <i class="fas fa-hand-pointer"></i> ClicChile -->
                     </div>
                     <p style="color: #ccc; line-height: 1.8;">
                         Tu portal automotriz líder en Chile. Conectamos a compradores y vendedores de vehículos comerciales con la mejor tecnología y servicio del mercado.

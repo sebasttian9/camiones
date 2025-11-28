@@ -1,4 +1,5 @@
 <?php
+require_once 'valida_sesion.php';
 // crear_camion.php - Formulario para crear nuevo camión
 
 require_once 'db_config.php';
@@ -21,7 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'color' => trim($_POST['color'] ?? ''),
         'cilindrada' => trim($_POST['cilindrada'] ?? ''),
         'marca_id' => intval($_POST['marca_id'] ?? 0),
-        'modelo_id' => intval($_POST['modelo_id'] ?? 0)
+        'modelo_id' => intval($_POST['modelo_id'] ?? 0),
+        'cliente_id' => $_SESSION['user_id']
     ];
 
     // var_dump($datos);

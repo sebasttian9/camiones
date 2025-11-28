@@ -1,4 +1,5 @@
 <?php
+require_once 'valida_sesion.php';
 // eliminar.php - Eliminar camión
 
 require_once 'db_config.php';

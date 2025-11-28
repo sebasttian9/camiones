@@ -1,4 +1,5 @@
 <?php
+require_once 'valida_sesion.php';
 // ver_camion.php - Ver detalles del camión
 
 require_once 'db_config.php';

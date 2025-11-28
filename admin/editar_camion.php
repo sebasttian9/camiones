@@ -1,4 +1,5 @@
 <?php
+require_once 'valida_sesion.php';
 // editar_camion.php - Formulario para editar camión
 
 require_once 'db_config.php';

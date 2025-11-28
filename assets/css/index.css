@@ -435,6 +435,13 @@
                 border-radius: 10%;        
             }
 
+        .logo_clic_footer {
+                width: 300px;
+                height: auto;
+                display: inline-block; /* elimina espacios debajo de la imagen */
+                border-radius: 10%;        
+            }    
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2rem;
